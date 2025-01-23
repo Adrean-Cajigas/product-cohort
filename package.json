@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.20.6",
+    "@tanstack/react-virtual": "^3.11.2",
     "ag-grid-community": "^33.0.4",
     "ag-grid-react": "^33.0.4",
     "next": "15.0.2",
