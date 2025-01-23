@@ -1,6 +1,11 @@
 'use client';
 import React, { useState } from 'react';
-import { AllCommunityModule, ColDef, ModuleRegistry, themeAlpine } from 'ag-grid-community'; 
+import { 
+  AllCommunityModule, 
+  ColDef, 
+  ModuleRegistry, 
+  themeAlpine 
+} from 'ag-grid-community'; 
 
 // Register all Community features
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -44,6 +49,7 @@ const Table = () => {
         pagination={true}
         paginationPageSize={10}
         theme={theme}
+        cellSelection={true}
       />
     </div>
   );
