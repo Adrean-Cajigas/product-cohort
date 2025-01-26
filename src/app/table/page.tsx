@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CustomerData } from "@/src/utils/types";
 import { Suspense } from "react";
 import DataTable from "@/src/components/DataTable";
-
+import TestTable from "@/src/components/testTable";
 function LoadingTable() {
   return <div>Loading...</div>;
 }
@@ -45,10 +45,12 @@ function Table() {
 
 export default function TableWrapper() {
   return (
-    <Suspense fallback={<LoadingTable />}>
-      <div className="mt-10">
-        <Table />
-      </div>
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingTable />}>
+        <div className="mt-10">
+          <Table />
+        </div>
+      </Suspense>
+    </>
   );
 }
