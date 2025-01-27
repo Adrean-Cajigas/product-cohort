@@ -82,16 +82,19 @@ const DataTable = ({ initialData }: DataTableProps) => {
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = React.useState<ColumnFiltersState>([])
+  const [globalFilterVal, setGlobalFilterVal] = React.useState<string>("")
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting, columnFilters, globalFilter },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   // _valuesCache holds the table values (could be good for live updating a db)
@@ -145,14 +148,33 @@ const DataTable = ({ initialData }: DataTableProps) => {
   return (
     <div className="h-[800px] w-[80vw] mx-auto relative">
       <div>
+        <input
+          type="text"
+          placeholder="Enter text here"
+          onChange={(e) => {
+            // Handle textbox input changes if needed
+            setGlobalFilterVal(e.target.value);
+          }}
+        />
         <button onClick={
+          // global filtering
+          () => {
+            table.setGlobalFilter([globalFilterVal])
+          }
+        }> filter by text
+        </button>
+      </div>
+
+      {/*<div>
+        <button onClick={
+          // col filtering
           () => {
             table.setColumnFilters([
               { id: 'source', value: 'CRM'}
             ])
           }
         }> filter source by CRM </button>
-      </div>
+      </div>*/}
 
       <div className="w-full h-full overflow-auto scrollbar-hide">
         <table className="min-w-full divide-y divide-slate-400 relative bg-neutral-50">
