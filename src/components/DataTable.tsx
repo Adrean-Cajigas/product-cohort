@@ -5,7 +5,7 @@ import {
   ColumnResizeMode,
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
+  getCoreRowModel, getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -17,7 +17,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import PaymentFrequencyStatus from './PaymentFrequencyChip';
 
 type DataTableProps = {
-  initialData: CustomerData[]; 
+  initialData: CustomerData[];
 };
 
 const columnHelper = createColumnHelper<CustomerData>();
@@ -96,17 +96,22 @@ const DataTable = ({ initialData }: DataTableProps) => {
   const [borderSelectedCell, setBorderSelectedCell] = React.useState<string | null>(null);
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilterVal, setGlobalFilterVal] = React.useState<string>('');
+  const [globalFilter, setGlobalFilter] = React.useState<string>('')
+
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    state: { sorting, globalFilter },
     columnResizeMode: 'onChange',
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   // _valuesCache holds the table values (could be good for live updating a db)
@@ -160,6 +165,35 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
   return (
     <div className="h-[800px] w-[80vw] mx-auto relative">
+      <div>
+        <input
+          type="text"
+          placeholder="Enter text here"
+          onChange={(e) => {
+            // Handle textbox input changes if needed
+            setGlobalFilterVal(e.target.value);
+          }}
+        />
+        <button onClick={
+          // global filtering
+          () => {
+            table.setGlobalFilter([globalFilterVal])
+          }
+        }> filter by text
+        </button>
+      </div>
+
+      {/*<div>
+        <button onClick={
+          // col filtering
+          () => {
+            table.setColumnFilters([
+              { id: 'source', value: 'CRM'}
+            ])
+          }
+        }> filter source by CRM </button>
+      </div>*/}
+
       <div className='w-full h-full overflow-x-auto' ref={tableContainerRef}>
         <div style={{ direction: table.options.columnResizeDirection }}>
         <table
@@ -195,7 +229,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                               header.getContext()
                             )}
                       </span>
-                      
+
                       {/* Sort indicator */}
                       <span className="flex-shrink-0">
                         {{
