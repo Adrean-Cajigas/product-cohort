@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
 import {
+  ColumnFiltersState,
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
+  getCoreRowModel, getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -15,7 +16,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import PaymentFrequencyStatus from './PaymentFrequencyChip';
 
 type DataTableProps = {
-  initialData: CustomerData[]; 
+  initialData: CustomerData[];
 };
 
 const columnHelper = createColumnHelper<CustomerData>();
@@ -44,6 +45,7 @@ const columns = [
   columnHelper.accessor('source', {
     header: 'Source',
     cell: info => <SourceStatus source={info.getValue()} />,
+    filterFn: 'equals',
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
@@ -79,14 +81,17 @@ const DataTable = ({ initialData }: DataTableProps) => {
   const [borderSelectedCell, setBorderSelectedCell] = React.useState<string | null>(null);
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    state: { sorting, columnFilters },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
   });
 
   // _valuesCache holds the table values (could be good for live updating a db)
@@ -137,9 +142,18 @@ const DataTable = ({ initialData }: DataTableProps) => {
       (virtualColumns[virtualColumns.length - 1]?.end ?? 0)
   }
 
-
   return (
     <div className="h-[800px] w-[80vw] mx-auto relative">
+      <div>
+        <button onClick={
+          () => {
+            table.setColumnFilters([
+              { id: 'source', value: 'CRM'}
+            ])
+          }
+        }> filter source by CRM </button>
+      </div>
+
       <div className="w-full h-full overflow-auto scrollbar-hide">
         <table className="min-w-full divide-y divide-slate-400 relative bg-neutral-50">
           <thead className="border-b-2 border-gray-300 top-0 bg-gray-800 z-30">
