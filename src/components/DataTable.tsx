@@ -4,6 +4,8 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 import { CustomerData } from '../utils/types';
@@ -18,7 +20,6 @@ type DataTableProps = {
 
 const columnHelper = createColumnHelper<CustomerData>();
 
-// Define columns
 const columns = [
   columnHelper.accessor('customerName', {
     header: 'Customer Name',
@@ -77,11 +78,15 @@ const DataTable = ({ initialData }: DataTableProps) => {
   const [data, setData] = React.useState(initialData);
   const [borderSelectedCell, setBorderSelectedCell] = React.useState<string | null>(null);
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   // _valuesCache holds the table values (could be good for live updating a db)
@@ -143,12 +148,23 @@ const DataTable = ({ initialData }: DataTableProps) => {
                 {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50"
+                    className="px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                    <div className='flex items-center justify-between'>
+                      <span>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </span>
+                      <span>
+                        {{
+                          asc: '↑',
+                          desc: '↓',
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </span>
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -163,7 +179,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                     onClick={() => {setBorderSelectedCell(cell.id)
                       console.log(cell)
                     }}
-                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-700 cursor-pointer relative select-none
+                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-700 cursor-auto relative select-none
                       ${borderSelectedCell === cell.id ? 'border-2 border-blue-500 z-10' : ''}
                     `}
                   >
