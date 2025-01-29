@@ -15,6 +15,7 @@ import SourceStatus from './SourceChip';
 import DestinationStatus from './DestinationChip';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import PaymentFrequencyStatus from './PaymentFrequencyChip';
+import CellInput from './CellInput'
 
 type DataTableProps = {
   initialData: CustomerData[];
@@ -25,30 +26,30 @@ const columnHelper = createColumnHelper<CustomerData>();
 const columns = [
   columnHelper.accessor('customerName', {
     header: 'Customer Name',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 200,
   }),
   columnHelper.accessor('customerID', {
     header: 'Customer ID',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 200,
   }),
   columnHelper.accessor('opportunityName', {
     header: 'Opportunity Name',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 350
   }),
   columnHelper.accessor('type', {
     header: 'Type',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('opportunityOwner', {
     header: 'Opportunity Owner',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('source', {
@@ -63,19 +64,19 @@ const columns = [
   }),
   columnHelper.accessor('formula', {
     header: 'Formula',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('billingEmails', {
     header: 'Billing Emails',
-    cell: info => info.getValue().join(', '),
+    cell: info => <CellInput defaultValue={info.getValue().join(', ')} />,
     enableResizing: true
   }),
   columnHelper.accessor('billingAddress', {
     header: 'Billing Address',
     cell: info => {
       const address = info.getValue();
-      return `${address.address}, ${address.city}, ${address.state} ${address.zip}`;
+      return <CellInput defaultValue={`${address.address}, ${address.city}, ${address.state} ${address.zip}`} />;
     },
     enableResizing: true
   }),
@@ -86,7 +87,7 @@ const columns = [
   }),
   columnHelper.accessor('netTerms', {
     header: 'Net Terms',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
 ];
@@ -269,6 +270,11 @@ const DataTable = ({ initialData }: DataTableProps) => {
                       cell.column.columnDef.cell,
                       cell.getContext()
                     )}
+                    {/* {flexRender(
+                      CellInput(cell.getContext()),
+                      cell.getContext()
+                    )} */}
+                    {/* <Cell context={cell.getContext()}/> */}
                   </td>
                 ))}
               </tr>

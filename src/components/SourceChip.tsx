@@ -1,4 +1,7 @@
+'use client';
+import { useState } from 'react';
 import { SOURCE } from "../utils/types"
+import ChipDropdown from './ChipDropdown';
 
 const sourceBackgroundColors = {
   [SOURCE.SALESFORCE]: 'bg-blue-200',
@@ -25,14 +28,25 @@ const sourceLabels = {
 }
 
 const SourceStatus = ({ source }: { source: SOURCE }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className={`flex items-center justify-center w-fit h-6 px-3 gap-2 rounded-lg ${sourceBackgroundColors[source]} ${sourceTextColors[source]}`}>
-      <div
-        className={`h-2 w-2 rounded-full ${sourceStatusDotColors[source]}`}
-      />
-      <span className={`ml-2 ${sourceTextColors[source]}`}>
-        {sourceLabels[source]}
-      </span>
+    <div>
+      <button onClick={toggleDropdown} className={`flex items-center justify-center w-fit h-6 px-3 gap-2 rounded-lg ${sourceBackgroundColors[source]} ${sourceTextColors[source]}`}>
+        {/* {isOpen && (
+          <ChipDropdown />
+        )} */}
+        <div
+          className={`h-2 w-2 rounded-full ${sourceStatusDotColors[source]}`}
+        />
+        <span className={`ml-2 ${sourceTextColors[source]}`}>
+          {sourceLabels[source]}
+        </span>
+      </button>
     </div>
   )
 }
