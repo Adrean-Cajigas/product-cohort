@@ -39,7 +39,7 @@ export default function ChipDropdown({ type, value, setValue }: ChipDropdownProp
             )}
             {(type === "frequency") && (
                 <div className='flex flex-col items-start'>
-                    {paymentContent.map((item, index) => (
+                    {paymentContent.map((item, _) => (
                         <button onClick={() => handleClick(item)} className='p-1'>
                             <Chip type="frequency" content={item} />
                         </button>
