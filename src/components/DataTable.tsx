@@ -54,12 +54,12 @@ const columns = [
   }),
   columnHelper.accessor('source', {
     header: 'Source',
-    cell: info => <SourceStatus source={info.getValue()} />,
+    cell: info => <SourceStatus defaultSource={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
-    cell: info => <DestinationStatus destination={info.getValue()} />,
+    cell: info => <DestinationStatus defaultDestination={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('formula', {
@@ -82,7 +82,7 @@ const columns = [
   }),
   columnHelper.accessor('paymentFrequency', {
     header: 'Payment Frequency',
-    cell: info => <PaymentFrequencyStatus freq={info.getValue()} />,
+    cell: info => <PaymentFrequencyStatus defaultFreq={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('netTerms', {

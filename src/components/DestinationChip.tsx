@@ -1,39 +1,30 @@
+'use client';
+import { useState } from 'react';
 import { DESTINATION } from "../utils/types"
+import ChipDropdown from './ChipDropdown';
+import Chip from "./Chip"
 
-const destinationBackgroundColors = {
-  [DESTINATION.STRIPE]: 'bg-orange-100',
-  [DESTINATION.NETSUITE]: 'bg-violet-100',
-  [DESTINATION.QUICKBOOKS]: 'bg-rose-100',
-}
+const DestinationStatus = ({ defaultDestination }: { defaultDestination: DESTINATION }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [destination, setDestination] = useState(defaultDestination)
 
-const destinationTextColors = {
-  [DESTINATION.STRIPE]: 'text-orange-800',
-  [DESTINATION.NETSUITE]: 'text-violet-800',
-  [DESTINATION.QUICKBOOKS]: 'text-rose-800',
-}
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
-const destinationStatusDotColors = {
-  [DESTINATION.STRIPE]: 'bg-orange-400',
-  [DESTINATION.NETSUITE]: 'bg-violet-400',
-  [DESTINATION.QUICKBOOKS]: 'bg-rose-400',
-}
-
-const destinationLabels = {
-  [DESTINATION.STRIPE]: 'Stripe',
-  [DESTINATION.NETSUITE]: 'NetSuite',
-  [DESTINATION.QUICKBOOKS]: 'QuickBooks',
-}
-
-const DestinationStatus = ({ destination }: { destination: DESTINATION }) => {
   return (
-    <div className={`flex items-center justify-center w-fit h-6 px-3 gap-2 rounded-lg ${destinationBackgroundColors[destination]} ${destinationTextColors[destination]}`}>
-      <div
-        className={`h-2 w-2 rounded-full ${destinationStatusDotColors[destination]}`}
-      />
-      <span className={`ml-2 ${destinationTextColors[destination]}`}>
-        {destinationLabels[destination]}
-      </span>
+    <div className='relative'>
+      <button onClick={toggleDropdown}>
+        <Chip 
+          type="destination"
+          content={destination} 
+        />
+        {isOpen && (
+          <ChipDropdown type="destination" value={destination} setValue={setDestination} />
+        )}
+      </button>
     </div>
   )
 }
+
 export default DestinationStatus;
