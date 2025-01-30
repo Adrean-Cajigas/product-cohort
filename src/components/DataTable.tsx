@@ -119,9 +119,10 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
   // _valuesCache holds the table values (could be good for live updating a db)
   const { rows } = table.getRowModel()
-  rows.forEach((row, index) => {
-    console.log(`Row ${index} values:`, row._valuesCache)
-  });
+  console.log(rows)
+  // rows.forEach((row, index) => {
+  //   console.log(`Row ${index} values:`, row._valuesCache)
+  // });
 
   const visibleColumns = table.getVisibleLeafColumns()
 
@@ -224,7 +225,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   >
                     <div className="flex items-center justify-between gap-2">
                       {/* Header content */}
-                      <span>
+                      <span className='select-none'>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -234,7 +235,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                       </span>
 
                       {/* Sort indicator */}
-                      <span className="flex-shrink-0">
+                      <span className="flex-shrink-0 select-none">
                         {{
                           asc: '↑',
                           desc: '↓',

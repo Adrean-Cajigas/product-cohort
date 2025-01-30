@@ -20,16 +20,25 @@ export default function ChipDropdown({ type, value, setValue }: ChipDropdownProp
     return (
         <div className='absolute left-0 top-full bg-white m-1 py-2 px-4 z-10 rounded-lg'>
             {(type === "source") && (
-                <div className='flex flex-col items-start'>
+                <div 
+                    className='flex flex-col items-start'
+                >
                     {sourceContent.map((item, _) => (
-                        <button onClick={() => handleClick(item)} className='p-1'>
+                        <button 
+                            onClick={() => handleClick(item)} 
+                            className='p-1'
+                            key={`{type}-${item}`}
+                        >
                             <Chip type="source" content={item} />
                         </button>
                     ))}
                 </div>
             )}
             {(type === "destination") && (
-                <div className='flex flex-col items-start'>
+                <div 
+                    className='flex flex-col items-start'
+                    key={1}
+                >
                     {destinationContent.map((item, _) => (
                         <button onClick={() => handleClick(item)} className='p-1'>
                             <Chip type="destination" content={item} />
@@ -40,7 +49,7 @@ export default function ChipDropdown({ type, value, setValue }: ChipDropdownProp
             {(type === "frequency") && (
                 <div 
                     className='flex flex-col items-start'
-                    key={type}
+                    key={2}
                 >
                     {paymentContent.map((item, _) => (
                         <button onClick={() => handleClick(item)} className='p-1'>
