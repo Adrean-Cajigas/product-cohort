@@ -69,7 +69,9 @@ const columns = [
   columnHelper.accessor('billingEmails', {
     header: 'Billing Emails',
     cell: info => info.getValue().join(', '),
-    enableResizing: true
+    enableResizing: true,
+    minSize: 300
+
   }),
   columnHelper.accessor('billingAddress', {
     header: 'Billing Address',
@@ -77,6 +79,7 @@ const columns = [
       const address = info.getValue();
       return `${address.address}, ${address.city}, ${address.state} ${address.zip}`;
     },
+    minSize: 300,
     enableResizing: true
   }),
   columnHelper.accessor('paymentFrequency', {
@@ -211,8 +214,8 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   <th
                     className="relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer"
                     onClick={header.column.getToggleSortingHandler()}
+                    key={header.id}
                     {...{
-                      key: header.id,
                       colSpan: header.colSpan,
                       style: {
                         width: header.getSize(),
@@ -221,7 +224,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   >
                     <div className="flex items-center justify-between gap-2">
                       {/* Header content */}
-                      <span>
+                      <span className='select-none'>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -231,7 +234,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                       </span>
 
                       {/* Sort indicator */}
-                      <span className="flex-shrink-0">
+                      <span className="flex-shrink-0 select-none">
                         {{
                           asc: '↑',
                           desc: '↓',
@@ -258,18 +261,20 @@ const DataTable = ({ initialData }: DataTableProps) => {
               <tr key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <td
-                    {...{
-                      key: cell.id,
-                      style: {
-                        width: cell.column.getSize(),
-                      },
-                    }}
-                  >
+                  key={cell.id}
+                  {...{
+                    style: {
+                      width: cell.column.getSize(),
+                    },
+                  }}
+                >
+                  <div className="px-4 py-4 whitespace-nowrap">
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
                     )}
-                  </td>
+                  </div>
+                </td>
                 ))}
               </tr>
             ))}
