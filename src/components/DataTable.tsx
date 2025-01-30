@@ -70,7 +70,8 @@ const columns = [
   columnHelper.accessor('billingEmails', {
     header: 'Billing Emails',
     cell: info => <CellInput defaultValue={info.getValue().join(', ')} />,
-    enableResizing: true
+    enableResizing: true,
+    minSize: 500
   }),
   columnHelper.accessor('billingAddress', {
     header: 'Billing Address',
@@ -78,7 +79,8 @@ const columns = [
       const address = info.getValue();
       return <CellInput defaultValue={`${address.address}, ${address.city}, ${address.state} ${address.zip}`} />;
     },
-    enableResizing: true
+    enableResizing: true,
+    minSize: 500
   }),
   columnHelper.accessor('paymentFrequency', {
     header: 'Payment Frequency',
@@ -117,9 +119,9 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
   // _valuesCache holds the table values (could be good for live updating a db)
   const { rows } = table.getRowModel()
-  // rows.forEach((row, index) => {
-  //   console.log(`Row ${index} values:`, row._valuesCache)
-  // });
+  rows.forEach((row, index) => {
+    console.log(`Row ${index} values:`, row._valuesCache)
+  });
 
   const visibleColumns = table.getVisibleLeafColumns()
 
@@ -165,7 +167,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
 
   return (
-    <div className="h-[800px] w-[80vw] mx-auto relative">
+    <div className="h-[800px] w-[90vw] mx-auto relative">
       <div>
         <input
           type="text"
@@ -212,8 +214,8 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   <th
                     className="relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer"
                     onClick={header.column.getToggleSortingHandler()}
+                    key={header.id}
                     {...{
-                      key: header.id,
                       colSpan: header.colSpan,
                       style: {
                         width: header.getSize(),
@@ -259,17 +261,19 @@ const DataTable = ({ initialData }: DataTableProps) => {
               <tr key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <td
+                    key={cell.id}
                     {...{
-                      key: cell.id,
                       style: {
                         width: cell.column.getSize(),
                       },
                     }}
                   >
+                    <div className='whitespace-nowrap'>
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
                     )}
+                    </div>
                     {/* {flexRender(
                       CellInput(cell.getContext()),
                       cell.getContext()

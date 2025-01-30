@@ -8,7 +8,7 @@ export default function CellInput({ defaultValue }: { defaultValue: string }) {
             <input 
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="bg-transparent py-4"
+                className="bg-transparent py-4 w-full"
             />
         </div>
     );
