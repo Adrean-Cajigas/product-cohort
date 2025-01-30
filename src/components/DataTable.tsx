@@ -15,6 +15,7 @@ import SourceStatus from './SourceChip';
 import DestinationStatus from './DestinationChip';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import PaymentFrequencyStatus from './PaymentFrequencyChip';
+import CellInput from './CellInput'
 
 type DataTableProps = {
   initialData: CustomerData[];
@@ -25,68 +26,70 @@ const columnHelper = createColumnHelper<CustomerData>();
 const columns = [
   columnHelper.accessor('customerName', {
     header: 'Customer Name',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 200,
   }),
   columnHelper.accessor('customerID', {
     header: 'Customer ID',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 200,
   }),
   columnHelper.accessor('opportunityName', {
     header: 'Opportunity Name',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 350
   }),
   columnHelper.accessor('type', {
     header: 'Type',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('opportunityOwner', {
     header: 'Opportunity Owner',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('source', {
     header: 'Source',
-    cell: info => <SourceStatus source={info.getValue()} />,
+    cell: info => <SourceStatus defaultSource={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
-    cell: info => <DestinationStatus destination={info.getValue()} />,
+    cell: info => <DestinationStatus defaultDestination={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('formula', {
     header: 'Formula',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('billingEmails', {
     header: 'Billing Emails',
-    cell: info => info.getValue().join(', '),
-    enableResizing: true
+    cell: info => <CellInput defaultValue={info.getValue().join(', ')} />,
+    enableResizing: true,
+    minSize: 500
   }),
   columnHelper.accessor('billingAddress', {
     header: 'Billing Address',
     cell: info => {
       const address = info.getValue();
-      return `${address.address}, ${address.city}, ${address.state} ${address.zip}`;
+      return <CellInput defaultValue={`${address.address}, ${address.city}, ${address.state} ${address.zip}`} />;
     },
-    enableResizing: true
+    enableResizing: true,
+    minSize: 500
   }),
   columnHelper.accessor('paymentFrequency', {
     header: 'Payment Frequency',
-    cell: info => <PaymentFrequencyStatus freq={info.getValue()} />,
+    cell: info => <PaymentFrequencyStatus defaultFreq={info.getValue()} />,
     enableResizing: true
   }),
   columnHelper.accessor('netTerms', {
     header: 'Net Terms',
-    cell: info => info.getValue(),
+    cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
 ];
@@ -116,6 +119,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
   // _valuesCache holds the table values (could be good for live updating a db)
   const { rows } = table.getRowModel()
+  console.log(rows)
   // rows.forEach((row, index) => {
   //   console.log(`Row ${index} values:`, row._valuesCache)
   // });
@@ -164,7 +168,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
 
   return (
-    <div className="h-[800px] w-[80vw] mx-auto relative">
+    <div className="h-[800px] w-[90vw] mx-auto relative">
       <div>
         <input
           type="text"
@@ -211,8 +215,8 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   <th
                     className="relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer"
                     onClick={header.column.getToggleSortingHandler()}
+                    key={header.id}
                     {...{
-                      key: header.id,
                       colSpan: header.colSpan,
                       style: {
                         width: header.getSize(),
@@ -221,7 +225,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                   >
                     <div className="flex items-center justify-between gap-2">
                       {/* Header content */}
-                      <span>
+                      <span className='select-none'>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -231,7 +235,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                       </span>
 
                       {/* Sort indicator */}
-                      <span className="flex-shrink-0">
+                      <span className="flex-shrink-0 select-none">
                         {{
                           asc: '↑',
                           desc: '↓',
@@ -258,17 +262,24 @@ const DataTable = ({ initialData }: DataTableProps) => {
               <tr key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <td
+                    key={cell.id}
                     {...{
-                      key: cell.id,
                       style: {
                         width: cell.column.getSize(),
                       },
                     }}
                   >
+                    <div className='whitespace-nowrap'>
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
                     )}
+                    </div>
+                    {/* {flexRender(
+                      CellInput(cell.getContext()),
+                      cell.getContext()
+                    )} */}
+                    {/* <Cell context={cell.getContext()}/> */}
                   </td>
                 ))}
               </tr>

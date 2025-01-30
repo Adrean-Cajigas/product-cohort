@@ -1,38 +1,28 @@
+'use client';
+import { useState } from 'react';
 import { PAYMENTFREQUENCY } from "../utils/types"
+import ChipDropdown from './ChipDropdown';
+import Chip from "./Chip"
 
-const paymentFrequencyBackgroundColors = {
-  [PAYMENTFREQUENCY.MONTHLY]: 'bg-blue-200',
-  [PAYMENTFREQUENCY.QUARTERLY]: 'bg-green-200',
-  [PAYMENTFREQUENCY.ANNUALLY]: 'bg-yellow-200',
-}
+const PaymentFrequencyStatus = ({ defaultFreq }: { defaultFreq: PAYMENTFREQUENCY }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [frequency, setFrequency] = useState(defaultFreq)
 
-const paymentFrequencyTextColors = {
-  [PAYMENTFREQUENCY.MONTHLY]: 'text-blue-900',
-  [PAYMENTFREQUENCY.QUARTERLY]: 'text-green-900',
-  [PAYMENTFREQUENCY.ANNUALLY]: 'text-yellow-900',
-}
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
-const paymentFrequencyDotColors = {
-  [PAYMENTFREQUENCY.MONTHLY]: 'bg-blue-400',
-  [PAYMENTFREQUENCY.QUARTERLY]: 'bg-green-400',
-  [PAYMENTFREQUENCY.ANNUALLY]: 'bg-yellow-400',
-}
-
-const paymentFrequencyLabels= {
-  [PAYMENTFREQUENCY.MONTHLY]: 'Monthly',
-  [PAYMENTFREQUENCY.QUARTERLY]: 'Quarterly',
-  [PAYMENTFREQUENCY.ANNUALLY]: 'Annually',
-}
-
-const PaymentFrequencyStatus = ({ freq }: { freq: PAYMENTFREQUENCY }) => {
   return (
-    <div className={`flex items-center justify-center w-fit h-6 px-3 gap-2 rounded-lg ${paymentFrequencyBackgroundColors[freq]} ${paymentFrequencyTextColors[freq]}`}>
-      <div
-        className={`h-2 w-2 rounded-full ${paymentFrequencyDotColors[freq]}`}
-      />
-      <span className={`ml-2 ${paymentFrequencyTextColors[freq]}`}>
-        {paymentFrequencyLabels[freq]}
-      </span>
+    <div className='relative'>
+      <button onClick={toggleDropdown}>
+        <Chip 
+          type="frequency"
+          content={frequency} 
+        />
+        {isOpen && (
+          <ChipDropdown type="frequency" value={frequency} setValue={setFrequency} />
+        )}
+      </button>
     </div>
   )
 }
