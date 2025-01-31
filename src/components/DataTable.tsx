@@ -11,16 +11,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { CustomerData } from '../utils/types';
-import SourceStatus from './SourceChip';
-import DestinationStatus from './DestinationChip';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import PaymentFrequencyStatus from './PaymentFrequencyChip';
-import CellInput from './CellInput'
-import ProductTable from "@/src/components/ProductTable";
-
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
 import { Filter } from 'lucide-react'; 
+import ProductTable from '@/src/components/ProductTable';
 type DataTableProps = {
   initialData: CustomerData[];
   columns: any;
