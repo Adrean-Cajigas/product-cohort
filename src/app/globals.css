@@ -70,7 +70,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
 table {
   @apply divide-y divide-slate-400 relative bg-neutral-50
 }
