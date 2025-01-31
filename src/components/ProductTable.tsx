@@ -1,101 +1,61 @@
-'use client';
-import React from 'react';
+import {CustomerData, ProductFeatures} from "@/src/utils/types";
+import CellInput from "@/src/components/CellInput";
+import SourceStatus from "@/src/components/SourceChip";
+import DestinationStatus from "@/src/components/DestinationChip";
+import PaymentFrequencyStatus from "@/src/components/PaymentFrequencyChip";
+import React from "react";
 import {
-  ColumnResizeDirection,
-  ColumnResizeMode,
-  createColumnHelper,
-  flexRender,
+  createColumnHelper, flexRender,
   getCoreRowModel, getFilteredRowModel,
   getSortedRowModel,
   SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { CustomerData } from '../utils/types';
-import SourceStatus from './SourceChip';
-import DestinationStatus from './DestinationChip';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import PaymentFrequencyStatus from './PaymentFrequencyChip';
-import CellInput from './CellInput'
-import ProductTable from "@/src/components/ProductTable";
+  useReactTable
+} from "@tanstack/react-table";
+import {useVirtualizer} from "@tanstack/react-virtual";
 
 type DataTableProps = {
-  initialData: CustomerData[];
+  initialData: ProductFeatures[];
 };
 
-const columnHelper = createColumnHelper<CustomerData>();
+const columnHelper = createColumnHelper<ProductFeatures>();
 
 const columns = [
-  columnHelper.accessor('customerName', {
-    header: 'Customer Name',
+  columnHelper.accessor('productName', {
+    header: 'Product Name',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 200,
   }),
-  columnHelper.accessor('customerID', {
-    header: 'Customer ID',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true,
-    minSize: 200,
-  }),
-  columnHelper.accessor('opportunityName', {
-    header: 'Opportunity Name',
+  columnHelper.accessor('startDate', {
+    header: 'Start Date',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
     minSize: 350
   }),
-  columnHelper.accessor('type', {
-    header: 'Type',
+  columnHelper.accessor('endDate', {
+    header: 'End Date',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true
   }),
-  columnHelper.accessor('opportunityOwner', {
-    header: 'Opportunity Owner',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
+  columnHelper.accessor('quantity', {
+    header: 'Quantity',
+    cell: info => <CellInput defaultValue={info.getValue()?.toString() ?? "1"} />,
     enableResizing: true
   }),
-  columnHelper.accessor('source', {
-    header: 'Source',
-    cell: info => <SourceStatus defaultSource={info.getValue()} />,
+  columnHelper.accessor('unitPrice', {
+    header: 'Unit Price',
+    cell: info => <CellInput defaultValue={info.getValue()?.toString() ?? "N/A"} />,
     enableResizing: true
   }),
-  columnHelper.accessor('destination', {
-    header: 'Destination',
-    cell: info => <DestinationStatus defaultDestination={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('formula', {
-    header: 'Formula',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('billingEmails', {
-    header: 'Billing Emails',
-    cell: info => <CellInput defaultValue={info.getValue().join(', ')} />,
-    enableResizing: true,
-    minSize: 500
-  }),
-  columnHelper.accessor('billingAddress', {
-    header: 'Billing Address',
-    cell: info => {
-      const address = info.getValue();
-      return <CellInput defaultValue={`${address.address}, ${address.city}, ${address.state} ${address.zip}`} />;
-    },
-    enableResizing: true,
-    minSize: 500
-  }),
-  columnHelper.accessor('paymentFrequency', {
-    header: 'Payment Frequency',
-    cell: info => <PaymentFrequencyStatus defaultFreq={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('netTerms', {
-    header: 'Net Terms',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
+  columnHelper.accessor('salePrice', {
+    header: 'Sale Price',
+    cell: info => <CellInput defaultValue={info.getValue().toString()} />,
     enableResizing: true
   }),
 ];
 
-const DataTable = ({ initialData }: DataTableProps) => {
+
+export default function ProductTable({ initialData }: DataTableProps) {
   const [data, setData] = React.useState(initialData);
   const [borderSelectedCell, setBorderSelectedCell] = React.useState<string | null>(null);
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
@@ -200,15 +160,15 @@ const DataTable = ({ initialData }: DataTableProps) => {
 
       <div className='w-full h-full overflow-x-auto' ref={tableContainerRef}>
         <div style={{ direction: table.options.columnResizeDirection }}>
-        <table
-          className='min-w-full'
-          {...{
-            style: {
-              width: table.getCenterTotalSize(),
-            },
-          }}
-        >
-          <thead>
+          <table
+            className='min-w-full'
+            {...{
+              style: {
+                width: table.getCenterTotalSize(),
+              },
+            }}
+          >
+            <thead>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id} className='sticky top-0 z-20'>
                 {headerGroup.headers.map(header => (
@@ -228,9 +188,9 @@ const DataTable = ({ initialData }: DataTableProps) => {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </span>
 
                       {/* Sort indicator */}
@@ -255,8 +215,8 @@ const DataTable = ({ initialData }: DataTableProps) => {
                 ))}
               </tr>
             ))}
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {table.getRowModel().rows.map(row => (
               <>
                 <tr key={row.id}>
@@ -270,10 +230,10 @@ const DataTable = ({ initialData }: DataTableProps) => {
                       }}
                     >
                       <div className='whitespace-nowrap'>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </div>
                       {/* {flexRender(
                         CellInput(cell.getContext()),
@@ -283,21 +243,12 @@ const DataTable = ({ initialData }: DataTableProps) => {
                     </td>
                   ))}
                 </tr>
-                <tr>
-                  <td colSpan={table.getVisibleLeafColumns().length}>
-                    {
-                      row.original.products && <ProductTable initialData={row.original.products} />
-                    }
-                  </td>
-                </tr>
               </>
             ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
-};
-
-export default DataTable;
+}

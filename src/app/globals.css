@@ -19,3 +19,19 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+table {
+  @apply divide-y divide-slate-400 relative bg-neutral-50
+}
+
+thead {
+  @apply border border-gray-300 top-0 z-30
+}
+
+th {
+  @apply relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer;
+}
+
+tbody {
+  @apply divide-y divide-slate-300 border
+}
