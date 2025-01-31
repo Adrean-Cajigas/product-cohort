@@ -11,91 +11,18 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { CustomerData } from '../utils/types';
-import SourceStatus from './SourceChip';
-import DestinationStatus from './DestinationChip';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import PaymentFrequencyStatus from './PaymentFrequencyChip';
-import CellInput from './CellInput'
-import ProductTable from "@/src/components/ProductTable";
-
+import { Input } from '@/src/components/ui/input';
+import { Button } from '@/src/components/ui/button';
+import { Filter } from 'lucide-react'; 
+import ProductTable from '@/src/components/ProductTable';
 type DataTableProps = {
   initialData: CustomerData[];
+  columns: any;
+  enableSorting?: boolean;
+  enableGlobalFiltering?: boolean;
 };
 
-const columnHelper = createColumnHelper<CustomerData>();
-
-const columns = [
-  columnHelper.accessor('customerName', {
-    header: 'Customer Name',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true,
-    minSize: 200,
-  }),
-  columnHelper.accessor('customerID', {
-    header: 'Customer ID',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true,
-    minSize: 200,
-  }),
-  columnHelper.accessor('opportunityName', {
-    header: 'Opportunity Name',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true,
-    minSize: 350
-  }),
-  columnHelper.accessor('type', {
-    header: 'Type',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('opportunityOwner', {
-    header: 'Opportunity Owner',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('source', {
-    header: 'Source',
-    cell: info => <SourceStatus defaultSource={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('destination', {
-    header: 'Destination',
-    cell: info => <DestinationStatus defaultDestination={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('formula', {
-    header: 'Formula',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('billingEmails', {
-    header: 'Billing Emails',
-    cell: info => <CellInput defaultValue={info.getValue().join(', ')} />,
-    enableResizing: true,
-    minSize: 500
-  }),
-  columnHelper.accessor('billingAddress', {
-    header: 'Billing Address',
-    cell: info => {
-      const address = info.getValue();
-      return <CellInput defaultValue={`${address.address}, ${address.city}, ${address.state} ${address.zip}`} />;
-    },
-    enableResizing: true,
-    minSize: 500
-  }),
-  columnHelper.accessor('paymentFrequency', {
-    header: 'Payment Frequency',
-    cell: info => <PaymentFrequencyStatus defaultFreq={info.getValue()} />,
-    enableResizing: true
-  }),
-  columnHelper.accessor('netTerms', {
-    header: 'Net Terms',
-    cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
-  }),
-];
-
-const DataTable = ({ initialData }: DataTableProps) => {
+const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFiltering = true }: DataTableProps) => {
   const [data, setData] = React.useState(initialData);
   const [borderSelectedCell, setBorderSelectedCell] = React.useState<string | null>(null);
   const [highlightedCell, setHighlightedCell] = React.useState<string | null>(null);
@@ -106,7 +33,9 @@ const DataTable = ({ initialData }: DataTableProps) => {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, globalFilter },
+    state: { 
+      ...(enableSorting && { sorting }), 
+      ...(enableGlobalFiltering && { globalFilter})},
     columnResizeMode: 'onChange',
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -118,87 +47,29 @@ const DataTable = ({ initialData }: DataTableProps) => {
     onGlobalFilterChange: setGlobalFilter,
   });
 
-  // _valuesCache holds the table values (could be good for live updating a db)
-  const { rows } = table.getRowModel()
-  console.log(rows)
-  // rows.forEach((row, index) => {
-  //   console.log(`Row ${index} values:`, row._valuesCache)
-  // });
-
-  const visibleColumns = table.getVisibleLeafColumns()
-
-  //The virtualizers need to know the scrollable container element
-  const tableContainerRef = React.useRef<HTMLDivElement>(null)
-
-  //we are using a slightly different virtualization strategy for columns (compared to virtual rows) in order to support dynamic row heights
-  const columnVirtualizer = useVirtualizer({
-    count: visibleColumns.length,
-    estimateSize: index => visibleColumns[index].getSize(), //estimate width of each column for accurate scrollbar dragging
-    getScrollElement: () => tableContainerRef.current,
-    horizontal: true,
-    overscan: 3, //how many columns to render on each side off screen each way (adjust this for performance)
-  })
-
-  //dynamic row height virtualization - alternatively you could use a simpler fixed row height strategy without the need for `measureElement`
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => 33, //estimate row height for accurate scrollbar dragging
-    getScrollElement: () => tableContainerRef.current,
-    //measure dynamic row height, except in firefox because it measures table border height incorrectly
-    measureElement:
-      typeof window !== 'undefined' &&
-      navigator.userAgent.indexOf('Firefox') === -1
-        ? element => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5,
-  })
-
-  const virtualColumns = columnVirtualizer.getVirtualItems()
-  const virtualRows = rowVirtualizer.getVirtualItems()
-
-  //different virtualization strategy for columns - instead of absolute and translateY, we add empty columns to the left and right
-  let virtualPaddingLeft: number | undefined
-  let virtualPaddingRight: number | undefined
-
-  if (columnVirtualizer && virtualColumns?.length) {
-    virtualPaddingLeft = virtualColumns[0]?.start ?? 0
-    virtualPaddingRight =
-      columnVirtualizer.getTotalSize() -
-      (virtualColumns[virtualColumns.length - 1]?.end ?? 0)
-  }
-
   return (
     <div className="h-[800px] w-[90vw] mx-auto relative">
-      <div>
-        <input
-          type="text"
-          placeholder="Enter text here"
+      {enableGlobalFiltering && <div className='mb-4 flex items-center gap-4'>
+        <Input
+          className='w-48'
+          placeholder="Search"
           onChange={(e) => {
             // Handle textbox input changes if needed
             setGlobalFilterVal(e.target.value); // TODO: add custom global filter function if we want to search nested tables too
           }}
         />
-        <button onClick={
-          // global filtering
-          () => {
+        <Button 
+          onClick={() => {
             table.setGlobalFilter([globalFilterVal])
-          }
-        }> filter by text
-        </button>
-      </div>
+          }}
+          className="flex items-center gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          Filter
+        </Button>
+      </div>}
 
-      {/*<div>
-        <button onClick={
-          // col filtering
-          () => {
-            table.setColumnFilters([
-              { id: 'source', value: 'CRM'}
-            ])
-          }
-        }> filter source by CRM </button>
-      </div>*/}
-
-      <div className='w-full h-full overflow-x-auto' ref={tableContainerRef}>
+      <div className='w-full h-full overflow-x-auto'>
         <div style={{ direction: table.options.columnResizeDirection }}>
         <table
           className='min-w-full'
