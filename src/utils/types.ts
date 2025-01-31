@@ -22,7 +22,11 @@ export type CustomerData = {
 }
 export type ProductFeatures = {
   productName: string,
-  details: details
+  startDate: string,
+  endDate: string,
+  quantity?: number,
+  unitPrice?: number,
+  salePrice: number,
 }
 
 export type details = {
