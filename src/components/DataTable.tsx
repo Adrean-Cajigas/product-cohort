@@ -11,10 +11,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { CustomerData } from '../utils/types';
+import SourceStatus from './SourceChip';
+import DestinationStatus from './DestinationChip';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import PaymentFrequencyStatus from './PaymentFrequencyChip';
+import CellInput from './CellInput'
+import ProductTable from "@/src/components/ProductTable";
+
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
 import { Filter } from 'lucide-react'; 
-import ProductTable from '@/src/components/ProductTable';
 type DataTableProps = {
   initialData: CustomerData[];
   columns: any;
@@ -55,7 +61,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           placeholder="Search"
           onChange={(e) => {
             // Handle textbox input changes if needed
-            setGlobalFilterVal(e.target.value); // TODO: add custom global filter function if we want to search nested tables too
+            setGlobalFilterVal(e.target.value);
           }}
         />
         <Button 
@@ -79,7 +85,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
             },
           }}
         >
-          <thead>
+          <thead className='border b-2 border-gray-300 top-0 bg-gray-800 z-30'>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id} className='sticky top-0 z-20'>
                 {headerGroup.headers.map(header => (

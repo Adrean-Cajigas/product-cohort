@@ -24,13 +24,11 @@ const columns = [
     header: 'Product Name',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
-    minSize: 200,
   }),
   columnHelper.accessor('startDate', {
     header: 'Start Date',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
-    minSize: 350
   }),
   columnHelper.accessor('endDate', {
     header: 'End Date',
