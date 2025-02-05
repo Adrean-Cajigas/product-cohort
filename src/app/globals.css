@@ -11,8 +11,6 @@ body {
   --foreground: #171717;
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -68,8 +66,6 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
-
 table {
   @apply divide-y divide-slate-400 relative bg-neutral-50
 }
