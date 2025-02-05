@@ -24,13 +24,11 @@ const columns = [
     header: 'Product Name',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
-    minSize: 200,
   }),
   columnHelper.accessor('startDate', {
     header: 'Start Date',
     cell: info => <CellInput defaultValue={info.getValue()} />,
     enableResizing: true,
-    minSize: 350
   }),
   columnHelper.accessor('endDate', {
     header: 'End Date',
@@ -78,57 +76,9 @@ export default function ProductTable({ initialData }: DataTableProps) {
     onGlobalFilterChange: setGlobalFilter,
   });
 
-  // _valuesCache holds the table values (could be good for live updating a db)
-  const { rows } = table.getRowModel()
-  console.log(rows)
-  // rows.forEach((row, index) => {
-  //   console.log(`Row ${index} values:`, row._valuesCache)
-  // });
-
-  const visibleColumns = table.getVisibleLeafColumns()
-
-  //The virtualizers need to know the scrollable container element
-  const tableContainerRef = React.useRef<HTMLDivElement>(null)
-
-  //we are using a slightly different virtualization strategy for columns (compared to virtual rows) in order to support dynamic row heights
-  const columnVirtualizer = useVirtualizer({
-    count: visibleColumns.length,
-    estimateSize: index => visibleColumns[index].getSize(), //estimate width of each column for accurate scrollbar dragging
-    getScrollElement: () => tableContainerRef.current,
-    horizontal: true,
-    overscan: 3, //how many columns to render on each side off screen each way (adjust this for performance)
-  })
-
-  //dynamic row height virtualization - alternatively you could use a simpler fixed row height strategy without the need for `measureElement`
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => 33, //estimate row height for accurate scrollbar dragging
-    getScrollElement: () => tableContainerRef.current,
-    //measure dynamic row height, except in firefox because it measures table border height incorrectly
-    measureElement:
-      typeof window !== 'undefined' &&
-      navigator.userAgent.indexOf('Firefox') === -1
-        ? element => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5,
-  })
-
-  const virtualColumns = columnVirtualizer.getVirtualItems()
-  const virtualRows = rowVirtualizer.getVirtualItems()
-
-  //different virtualization strategy for columns - instead of absolute and translateY, we add empty columns to the left and right
-  let virtualPaddingLeft: number | undefined
-  let virtualPaddingRight: number | undefined
-
-  if (columnVirtualizer && virtualColumns?.length) {
-    virtualPaddingLeft = virtualColumns[0]?.start ?? 0
-    virtualPaddingRight =
-      columnVirtualizer.getTotalSize() -
-      (virtualColumns[virtualColumns.length - 1]?.end ?? 0)
-  }
 
   return (
-    <div className="h-[800px] w-[90vw] mx-auto relative">
+    <div className="w-[90vw] mx-auto relative">
       <div>
         <input
           type="text"
@@ -147,18 +97,7 @@ export default function ProductTable({ initialData }: DataTableProps) {
         </button>
       </div>
 
-      {/*<div>
-        <button onClick={
-          // col filtering
-          () => {
-            table.setColumnFilters([
-              { id: 'source', value: 'CRM'}
-            ])
-          }
-        }> filter source by CRM </button>
-      </div>*/}
-
-      <div className='w-full h-full overflow-x-auto' ref={tableContainerRef}>
+      <div className='w-full h-full overflow-x-auto'>
         <div style={{ direction: table.options.columnResizeDirection }}>
           <table
             className='min-w-full'
