@@ -61,7 +61,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           placeholder="Search"
           onChange={(e) => {
             // Handle textbox input changes if needed
-            setGlobalFilterVal(e.target.value); // TODO: add custom global filter function if we want to search nested tables too
+            setGlobalFilterVal(e.target.value);
           }}
         />
         <Button 
