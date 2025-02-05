@@ -258,8 +258,8 @@ const DataTable = ({ initialData }: DataTableProps) => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map(row => (
-              <>
-                <tr key={row.id}>
+              <React.Fragment key={row.id}>
+                <tr>
                   {row.getVisibleCells().map(cell => (
                     <td
                       key={cell.id}
@@ -290,7 +290,7 @@ const DataTable = ({ initialData }: DataTableProps) => {
                     }
                   </td>
                 </tr>
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

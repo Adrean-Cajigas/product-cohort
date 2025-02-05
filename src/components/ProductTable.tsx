@@ -218,32 +218,30 @@ export default function ProductTable({ initialData }: DataTableProps) {
             </thead>
             <tbody>
             {table.getRowModel().rows.map(row => (
-              <>
-                <tr key={row.id}>
-                  {row.getVisibleCells().map(cell => (
-                    <td
-                      key={cell.id}
-                      {...{
-                        style: {
-                          width: cell.column.getSize(),
-                        },
-                      }}
-                    >
-                      <div className='whitespace-nowrap'>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                      {/* {flexRender(
-                        CellInput(cell.getContext()),
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td
+                    key={cell.id}
+                    {...{
+                      style: {
+                        width: cell.column.getSize(),
+                      },
+                    }}
+                  >
+                    <div className='whitespace-nowrap'>
+                      {flexRender(
+                        cell.column.columnDef.cell,
                         cell.getContext()
-                      )} */}
-                      {/* <Cell context={cell.getContext()}/> */}
-                    </td>
-                  ))}
-                </tr>
-              </>
+                      )}
+                    </div>
+                    {/* {flexRender(
+                      CellInput(cell.getContext()),
+                      cell.getContext()
+                    )} */}
+                    {/* <Cell context={cell.getContext()}/> */}
+                  </td>
+                ))}
+              </tr>
             ))}
             </tbody>
           </table>
