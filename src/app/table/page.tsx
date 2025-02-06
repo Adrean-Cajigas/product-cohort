@@ -95,7 +95,6 @@ const columns = [
 ];
 
 
-
 function Table() {
   const [data, setData] = useState<CustomerData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

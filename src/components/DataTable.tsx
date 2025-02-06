@@ -14,6 +14,7 @@ import { CustomerData } from '../utils/types';
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
 import { Filter, EllipsisVertical, Check } from 'lucide-react'; 
+import ProductTable from './ProductTable';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -193,35 +194,43 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
               </tr>
             ))}
           </thead>
-          <div className='border-none mt-[1px]'></div>
           <tbody className='divide-y divide-slate-300'>
             {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <td
-                    className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
-                    onClick={() => setSelectedColumn(null)}                   
-                    key={cell.id}
-                    {...{
-                      style: {
-                        width: cell.column.getSize(),
-                      },
-                    }}
-                  >
-                    <div className='whitespace-nowrap pl-[1px]'>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                    </div>
-                    {/* {flexRender(
-                      CellInput(cell.getContext()),
-                      cell.getContext()
-                    )} */}
-                    {/* <Cell context={cell.getContext()}/> */}
+              <React.Fragment>
+                <tr key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <td
+                      className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
+                      onClick={() => setSelectedColumn(null)}                   
+                      key={cell.id}
+                      {...{
+                        style: {
+                          width: cell.column.getSize(),
+                        },
+                      }}
+                    >
+                      <div className='whitespace-nowrap pl-[1px]'>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                      </div>
+                      {/* {flexRender(
+                        CellInput(cell.getContext()),
+                        cell.getContext()
+                      )} */}
+                      {/* <Cell context={cell.getContext()}/> */}
+                    </td>
+                  ))}
+                </tr>
+               <tr>
+                  <td colSpan={table.getVisibleLeafColumns().length}>
+                    {
+                      row.original.products && <ProductTable initialData={row.original.products} />
+                    }
                   </td>
-                ))}
-              </tr>
+                </tr>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
@@ -232,3 +241,4 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
 };
 
 export default DataTable;
+
