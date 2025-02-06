@@ -164,6 +164,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                   <td colSpan={table.getVisibleLeafColumns().length}>
                     {
                       row.original.products && <ProductTable initialData={row.original.products} />
+                    }
                   </td>
                 </tr>
               </React.Fragment>
