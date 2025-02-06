@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ColumnResizeDirection,
   ColumnResizeMode,
@@ -13,7 +13,15 @@ import {
 import { CustomerData } from '../utils/types';
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
-import { Filter } from 'lucide-react'; 
+import { Filter, EllipsisVertical, Check } from 'lucide-react'; 
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuTrigger, 
+  DropdownMenuSeparator 
+} from './ui/dropdown-menu';
 type DataTableProps = {
   initialData: CustomerData[];
   columns: any;
@@ -28,6 +36,12 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilterVal, setGlobalFilterVal] = React.useState<string>('');
   const [globalFilter, setGlobalFilter] = React.useState<string>('')
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<string | null>(null);
+
+  const handleSelectAllInColumn = (columnId: string) => {
+    setSelectedColumn(columnId);
+  };
 
   const table = useReactTable({
     data,
@@ -66,25 +80,36 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           <Filter className="h-4 w-4" />
           Filter
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger><EllipsisVertical className='w-4 h-4'/></DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Sort Asc</DropdownMenuItem>
+            <DropdownMenuItem>Sort Desc</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
       </div>}
 
       <div className='w-full h-full overflow-x-auto'>
         <div style={{ direction: table.options.columnResizeDirection }}>
         <table
-          className='min-w-full divide-y divide-slate-400 relative bg-neutral-50'
+          className='min-w-full divide-y divide-slate-300 relative bg-neutral-50'
           {...{
             style: {
               width: table.getCenterTotalSize(),
             },
           }}
         >
-          <thead className='border b-2 border-gray-300 top-0 bg-gray-800 z-30'>
+          <thead className='divide-y divide-slate-300 sticky top-0 bg-neutral-50 z-30'>
             {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id} className='sticky top-0 z-20'>
+              <tr key={headerGroup.id} className='bg-neutral-300'>
                 {headerGroup.headers.map(header => (
                   <th
-                    className="relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.1)] uppercase tracking-wider bg-neutral-50 cursor-pointer"
-                    onClick={header.column.getToggleSortingHandler()}
+                    className={`group border-r relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider bg-neutral-50 cursor-pointer
+                      ${selectedColumn === header.id ? 'bg-blue-50' : 'bg-neutral-50'}`}
+                    onClick={() => handleSelectAllInColumn(header.id)}
                     key={header.id}
                     {...{
                       colSpan: header.colSpan,
@@ -111,8 +136,50 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                           desc: '↓',
                         }[header.column.getIsSorted() as string] ?? null}
                       </span>
-                    </div>
 
+                      <DropdownMenu onOpenChange={(open) => {
+                        setOpenDropdownId(open ? header.id : null)
+                      }}>
+                        <DropdownMenuTrigger className="outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0">
+                          <EllipsisVertical 
+                            className={`w-4 h-4 transition-opacity ${
+                              openDropdownId === header.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                            }`}
+                          />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>Options</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => {
+                            if (header.column.getIsSorted() === 'asc') {
+                              header.column.clearSorting();
+                            } else {
+                              header.column.toggleSorting(false);
+                            }
+                          }}>
+                            <div className="flex items-center justify-between w-full">
+                              Sort Asc
+                              {header.column.getIsSorted() === 'asc' && <Check className="w-4 h-4 ml-2" />}
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            if (header.column.getIsSorted() === 'desc') {
+                              header.column.clearSorting();
+                            } else {
+                              header.column.toggleSorting(true);
+                            }
+                          }}>
+                            <div className="flex items-center justify-between w-full">
+                              Sort Desc
+                              {header.column.getIsSorted() === 'desc' && <Check className="w-4 h-4 ml-2" />}
+                            </div>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleSelectAllInColumn(header.id)}>Select All</DropdownMenuItem>
+                          <DropdownMenuItem>Conditional Formatting</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                     {/* Column resizer */}
                     <div
                       onDoubleClick={() => header.column.resetSize()}
@@ -120,18 +187,20 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                       onTouchStart={header.getResizeHandler()}
                       className="absolute right-0 top-0 h-full w-4 cursor-col-resize hover:bg-gray-200 active:bg-gray-300 transition-colors"
                     >
-                      <div className="absolute right-0 top-0 h-full w-[1px] bg-gray-300" />
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
+          <div className='border-none mt-[1px]'></div>
           <tbody className='divide-y divide-slate-300'>
             {table.getRowModel().rows.map(row => (
               <tr key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <td
+                    className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
+                    onClick={() => setSelectedColumn(null)}                   
                     key={cell.id}
                     {...{
                       style: {
@@ -139,7 +208,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                       },
                     }}
                   >
-                    <div className='whitespace-nowrap pl-4'>
+                    <div className='whitespace-nowrap pl-[1px]'>
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()

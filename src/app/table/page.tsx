@@ -47,17 +47,20 @@ const columns = [
   columnHelper.accessor('opportunityOwner', {
     header: 'Opportunity Owner',
     cell: info => <CellInput defaultValue={info.getValue()} />,
-    enableResizing: true
+    enableResizing: true,
+    minSize: 200
   }),
   columnHelper.accessor('source', {
     header: 'Source',
     cell: info => <SourceStatus defaultSource={info.getValue()} />,
-    enableResizing: true
+    enableResizing: true,
+    minSize: 175
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
     cell: info => <DestinationStatus defaultDestination={info.getValue()} />,
-    enableResizing: true
+    enableResizing: true,
+    minSize: 175
   }),
   columnHelper.accessor('formula', {
     header: 'Formula',
