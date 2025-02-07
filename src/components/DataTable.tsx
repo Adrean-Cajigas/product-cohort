@@ -13,15 +13,15 @@ import {
 import { CustomerData } from '../utils/types';
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
-import { Filter, EllipsisVertical, Check } from 'lucide-react'; 
+import { Filter, EllipsisVertical, Check } from 'lucide-react';
 import ProductTable from './ProductTable';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuTrigger, 
-  DropdownMenuSeparator 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from './ui/dropdown-menu';
 type DataTableProps = {
   initialData: CustomerData[];
@@ -47,8 +47,8 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
   const table = useReactTable({
     data,
     columns,
-    state: { 
-      ...(enableSorting && { sorting }), 
+    state: {
+      ...(enableSorting && { sorting }),
       ...(enableGlobalFiltering && { globalFilter})},
     columnResizeMode: 'onChange',
     onSortingChange: setSorting,
@@ -72,7 +72,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
             setGlobalFilterVal(e.target.value);
           }}
         />
-        <Button 
+        <Button
           onClick={() => {
             table.setGlobalFilter([globalFilterVal])
           }}
@@ -142,7 +142,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                         setOpenDropdownId(open ? header.id : null)
                       }}>
                         <DropdownMenuTrigger className="outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                          <EllipsisVertical 
+                          <EllipsisVertical
                             className={`w-4 h-4 transition-opacity ${
                               openDropdownId === header.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                             }`}
@@ -196,12 +196,12 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           </thead>
           <tbody className='divide-y divide-slate-300'>
             {table.getRowModel().rows.map(row => (
-              <React.Fragment>
-                <tr key={row.id}>
+              <React.Fragment key={row.id}>
+                <tr>
                   {row.getVisibleCells().map(cell => (
                     <td
                       className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
-                      onClick={() => setSelectedColumn(null)}                   
+                      onClick={() => setSelectedColumn(null)}
                       key={cell.id}
                       {...{
                         style: {
@@ -223,13 +223,30 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                     </td>
                   ))}
                 </tr>
-               <tr>
-                  <td colSpan={table.getVisibleLeafColumns().length}>
-                    {
-                      row.original.products && <ProductTable initialData={row.original.products} />
-                    }
-                  </td>
+                <tr>
+                  <td />
+                  <td />
+                  <td>Product Name</td>
+                  <td>Start Date</td>
+                  <td>End Date</td>
+                  <td>Quantity</td>
+                  <td>Unit Price</td>
+                  <td>Sale Price</td>
                 </tr>
+                {row.original.products.map((product, idx) => {
+                  return (
+                    <tr key={idx}>
+                      <td/>
+                      <td/>
+                      <td>{product.productName}</td>
+                      <td>{product.startDate}</td>
+                      <td>{product.endDate}</td>
+                      <td>{product.quantity}</td>
+                      <td>{product.unitPrice}</td>
+                      <td>{product.salePrice}</td>
+                    </tr>
+                  );
+                })}
               </React.Fragment>
             ))}
           </tbody>
