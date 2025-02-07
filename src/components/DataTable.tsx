@@ -13,15 +13,15 @@ import {
 import { CustomerData } from '../utils/types';
 import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
-import { Filter, EllipsisVertical, Check } from 'lucide-react'; 
+import { Filter, EllipsisVertical, Check } from 'lucide-react';
 import ProductTable from './ProductTable';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuTrigger, 
-  DropdownMenuSeparator 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from './ui/dropdown-menu';
 type DataTableProps = {
   initialData: CustomerData[];
@@ -47,8 +47,8 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
   const table = useReactTable({
     data,
     columns,
-    state: { 
-      ...(enableSorting && { sorting }), 
+    state: {
+      ...(enableSorting && { sorting }),
       ...(enableGlobalFiltering && { globalFilter})},
     columnResizeMode: 'onChange',
     onSortingChange: setSorting,
@@ -61,6 +61,19 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
     onGlobalFilterChange: setGlobalFilter,
   });
 
+  const [showNested, setShowNested] = React.useState(new Set<string>());
+
+  function toggleRow(id: string) {
+    const newNesting = new Set(showNested);
+    if (newNesting.has(id)) {
+      newNesting.delete(id);
+    }
+    else {
+      newNesting.add(id);
+    }
+    setShowNested(newNesting);
+  }
+
   return (
     <div className="h-[800px] w-[90vw] mx-auto relative">
       {enableGlobalFiltering && <div className='mb-4 flex items-center gap-4'>
@@ -72,7 +85,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
             setGlobalFilterVal(e.target.value);
           }}
         />
-        <Button 
+        <Button
           onClick={() => {
             table.setGlobalFilter([globalFilterVal])
           }}
@@ -106,6 +119,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           <thead className='divide-y divide-slate-300 sticky top-0 bg-neutral-50 z-30'>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id} className='bg-neutral-300'>
+                <th />
                 {headerGroup.headers.map(header => (
                   <th
                     className={`group border-r relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider bg-neutral-50 cursor-pointer
@@ -142,7 +156,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                         setOpenDropdownId(open ? header.id : null)
                       }}>
                         <DropdownMenuTrigger className="outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                          <EllipsisVertical 
+                          <EllipsisVertical
                             className={`w-4 h-4 transition-opacity ${
                               openDropdownId === header.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                             }`}
@@ -196,12 +210,13 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           </thead>
           <tbody className='divide-y divide-slate-300'>
             {table.getRowModel().rows.map(row => (
-              <React.Fragment>
-                <tr key={row.id}>
+              <React.Fragment key={row.id}>
+                <tr>
+                  <td onClick={() => toggleRow(row.id)}>{showNested.has(row.id) ? '-' : '+'}</td>
                   {row.getVisibleCells().map(cell => (
                     <td
                       className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
-                      onClick={() => setSelectedColumn(null)}                   
+                      onClick={() => setSelectedColumn(null)}
                       key={cell.id}
                       {...{
                         style: {
@@ -223,13 +238,49 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                     </td>
                   ))}
                 </tr>
-               <tr>
-                  <td colSpan={table.getVisibleLeafColumns().length}>
-                    {
-                      row.original.products && <ProductTable initialData={row.original.products} />
-                    }
-                  </td>
-                </tr>
+                { showNested.has(row.id) &&
+                  <>
+                    <tr>
+                      <td />
+                      <td />
+                      <td />
+                      <td className={`border-b border-r ${selectedColumn == row.id + 'nested-name' ? 'bg-blue-50' : ''}`}>Product Name</td>
+                      <td>Start Date</td>
+                      <td>End Date</td>
+                      <td>Quantity</td>
+                      <td>Unit Price</td>
+                      <td>Sale Price</td>
+                    </tr>
+                    {row.original.products.map((product, idx) => {
+                      const nameKey = `${row.id}-nested-${idx}-name`;
+                      const startKey = `${row.id}-nested-${idx}-start`;
+                      const endKey = `${row.id}-nested-${idx}-end`;
+                      const quantityKey = `${row.id}-nested-${idx}-quantity`;
+                      const unitKey = `${row.id}-nested-${idx}-unit`;
+                      const saleKey = `${row.id}-nested-${idx}-sale`;
+
+                      return (
+                        <tr key={idx}>
+                          <td/>
+                          <td/>
+                          <td/>
+                          <td className={`border-b border-r ${selectedColumn == nameKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(nameKey)}>{product.productName}</td>
+                          <td className={`border-b border-r ${selectedColumn == startKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(startKey)}>{product.startDate}</td>
+                          <td className={`border-b border-r ${selectedColumn == endKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(endKey)}>{product.endDate}</td>
+                          <td className={`border-b border-r ${selectedColumn == quantityKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(quantityKey)}>{product.quantity}</td>
+                          <td className={`border-b border-r ${selectedColumn == unitKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(unitKey)}>{product.unitPrice}</td>
+                          <td className={`border-b border-r ${selectedColumn == saleKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(saleKey)}>{product.salePrice}</td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                }
               </React.Fragment>
             ))}
           </tbody>
