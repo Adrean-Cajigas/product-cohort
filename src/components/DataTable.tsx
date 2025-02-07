@@ -244,7 +244,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                       <td />
                       <td />
                       <td />
-                      <td>Product Name</td>
+                      <td className={`border-b border-r ${selectedColumn == row.id + 'nested-name' ? 'bg-blue-50' : ''}`}>Product Name</td>
                       <td>Start Date</td>
                       <td>End Date</td>
                       <td>Quantity</td>
@@ -252,17 +252,30 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                       <td>Sale Price</td>
                     </tr>
                     {row.original.products.map((product, idx) => {
+                      const nameKey = `${row.id}-nested-${idx}-name`;
+                      const startKey = `${row.id}-nested-${idx}-start`;
+                      const endKey = `${row.id}-nested-${idx}-end`;
+                      const quantityKey = `${row.id}-nested-${idx}-quantity`;
+                      const unitKey = `${row.id}-nested-${idx}-unit`;
+                      const saleKey = `${row.id}-nested-${idx}-sale`;
+
                       return (
                         <tr key={idx}>
                           <td/>
                           <td/>
                           <td/>
-                          <td>{product.productName}</td>
-                          <td>{product.startDate}</td>
-                          <td>{product.endDate}</td>
-                          <td>{product.quantity}</td>
-                          <td>{product.unitPrice}</td>
-                          <td>{product.salePrice}</td>
+                          <td className={`border-b border-r ${selectedColumn == nameKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(nameKey)}>{product.productName}</td>
+                          <td className={`border-b border-r ${selectedColumn == startKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(startKey)}>{product.startDate}</td>
+                          <td className={`border-b border-r ${selectedColumn == endKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(endKey)}>{product.endDate}</td>
+                          <td className={`border-b border-r ${selectedColumn == quantityKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(quantityKey)}>{product.quantity}</td>
+                          <td className={`border-b border-r ${selectedColumn == unitKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(unitKey)}>{product.unitPrice}</td>
+                          <td className={`border-b border-r ${selectedColumn == saleKey ? 'bg-blue-50' : ''}`}
+                              onClick={() => setSelectedColumn(saleKey)}>{product.salePrice}</td>
                         </tr>
                       );
                     })}
