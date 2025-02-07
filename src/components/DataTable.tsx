@@ -61,6 +61,19 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
     onGlobalFilterChange: setGlobalFilter,
   });
 
+  const [showNested, setShowNested] = React.useState(new Set<string>());
+
+  function toggleRow(id: string) {
+    const newNesting = new Set(showNested);
+    if (newNesting.has(id)) {
+      newNesting.delete(id);
+    }
+    else {
+      newNesting.add(id);
+    }
+    setShowNested(newNesting);
+  }
+
   return (
     <div className="h-[800px] w-[90vw] mx-auto relative">
       {enableGlobalFiltering && <div className='mb-4 flex items-center gap-4'>
@@ -106,6 +119,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
           <thead className='divide-y divide-slate-300 sticky top-0 bg-neutral-50 z-30'>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id} className='bg-neutral-300'>
+                <th />
                 {headerGroup.headers.map(header => (
                   <th
                     className={`group border-r relative px-6 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider bg-neutral-50 cursor-pointer
@@ -198,6 +212,7 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
             {table.getRowModel().rows.map(row => (
               <React.Fragment key={row.id}>
                 <tr>
+                  <td onClick={() => toggleRow(row.id)}>{showNested.has(row.id) ? '-' : '+'}</td>
                   {row.getVisibleCells().map(cell => (
                     <td
                       className={`border-b border-r ${selectedColumn == cell.column.id ? 'bg-blue-50' : ''}`}
@@ -223,30 +238,36 @@ const DataTable = ({ initialData, columns, enableSorting = true, enableGlobalFil
                     </td>
                   ))}
                 </tr>
-                <tr>
-                  <td />
-                  <td />
-                  <td>Product Name</td>
-                  <td>Start Date</td>
-                  <td>End Date</td>
-                  <td>Quantity</td>
-                  <td>Unit Price</td>
-                  <td>Sale Price</td>
-                </tr>
-                {row.original.products.map((product, idx) => {
-                  return (
-                    <tr key={idx}>
-                      <td/>
-                      <td/>
-                      <td>{product.productName}</td>
-                      <td>{product.startDate}</td>
-                      <td>{product.endDate}</td>
-                      <td>{product.quantity}</td>
-                      <td>{product.unitPrice}</td>
-                      <td>{product.salePrice}</td>
+                { showNested.has(row.id) &&
+                  <>
+                    <tr>
+                      <td />
+                      <td />
+                      <td />
+                      <td>Product Name</td>
+                      <td>Start Date</td>
+                      <td>End Date</td>
+                      <td>Quantity</td>
+                      <td>Unit Price</td>
+                      <td>Sale Price</td>
                     </tr>
-                  );
-                })}
+                    {row.original.products.map((product, idx) => {
+                      return (
+                        <tr key={idx}>
+                          <td/>
+                          <td/>
+                          <td/>
+                          <td>{product.productName}</td>
+                          <td>{product.startDate}</td>
+                          <td>{product.endDate}</td>
+                          <td>{product.quantity}</td>
+                          <td>{product.unitPrice}</td>
+                          <td>{product.salePrice}</td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                }
               </React.Fragment>
             ))}
           </tbody>
